@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h1>Sessions</h1>
+  <div class="stats">
+    <span>Sources: {{ stats.enabled_sources or 0 }}</span>
+    <span>Files: {{ stats.active_files or 0 }}</span>
+    <span>Sessions: {{ stats.sessions_count or 0 }}</span>
+    <span>Messages: {{ stats.messages_count or 0 }}</span>
+  </div>
+  <form id="sessions-filters" class="filters" method="get" action="/">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search in title/content (FTS)">
+    <select name="source_id">
+      <option value="">All sources</option>
+      {% for s in sources %}
+        <option value="{{ s.id }}" {% if source_id == s.id %}selected{% endif %}>{{ s.name }}</option>
+      {% endfor %}
+    </select>
+    <input type="text" name="distro" value="{{ distro }}" placeholder="Distro">
+    <input type="text" name="user_name" value="{{ user_name }}" placeholder="User">
+    <input type="hidden" name="hide_service" value="0">
+    <label class="checkbox">
+      <input type="checkbox" name="hide_service" value="1" {% if hide_service %}checked{% endif %}>
+      Hide service events
+    </label>
+    <input type="hidden" name="ofac" value="0">
+    <label class="checkbox">
+      <input type="checkbox" name="ofac" value="1" {% if ofac %}checked{% endif %}>
+      OFAC
+    </label>
+    <button type="submit">Filter</button>
+  </form>
+  <div class="muted">
+    OFAC = Only Final Answers From Codex (shows `User` + final `Codex` answers only).
+  </div>
+</section>
+
+<script>
+  (function () {
+    const form = document.getElementById("sessions-filters");
+    if (!form) return;
+    const autoApply = form.querySelectorAll('input[type="checkbox"][name="hide_service"], input[type="checkbox"][name="ofac"]');
+    for (const el of autoApply) {
+      el.addEventListener("change", () => form.requestSubmit());
+    }
+  })();
+</script>
+
+<section class="panel">
+  {% if sessions %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Source</th>
+          <th>User</th>
+          <th>Messages</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in sessions %}
+        <tr>
+          <td>
+            <a href="/sessions/{{ s.id }}{% if ofac %}?ofac=1{% elif not hide_service %}?show_service=1{% endif %}">
+              {{ s.title or s.session_key or ("Session " ~ s.id) }}
+            </a>
+            <div class="muted">{{ s.rel_path }}</div>
+          </td>
+          <td>{{ s.source_name }}</td>
+          <td>{{ s.distro or "" }} / {{ s.user_name or "" }}</td>
+          <td>{{ s.messages_count }}</td>
+          <td>{{ s.updated_at or s.started_at or "-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No sessions yet. Check sources and run rescan.</p>
+  {% endif %}
+</section>
+{% endblock %}

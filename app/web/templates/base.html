@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "Codex Chats Archive" }}</title>
+  <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  {% set home_href = "/" %}
+  {% if request.query_params.get("ofac") == "1" %}
+    {% set home_href = "/?ofac=1" %}
+  {% elif request.query_params.get("show_service") == "1" %}
+    {% set home_href = "/?hide_service=0" %}
+  {% elif request.query_params.get("hide_service") == "0" %}
+    {% set home_href = "/?hide_service=0" %}
+  {% endif %}
+  <header class="topbar">
+    <div class="brand"><a href="{{ home_href }}">Codex Chats Archive</a></div>
+    <nav class="nav">
+      <a href="{{ home_href }}">Sessions</a>
+      <a href="/search">Search</a>
+      <a href="/admin/sources">Sources</a>
+      <a href="/admin/scans">Scans</a>
+    </nav>
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

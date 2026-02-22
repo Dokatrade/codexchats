@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h1>Scans</h1>
+  <div class="row">
+    <form method="post" action="/admin/rescan">
+      <input type="hidden" name="mode" value="quick">
+      <button type="submit">Quick Rescan</button>
+    </form>
+    <form method="post" action="/admin/rescan">
+      <input type="hidden" name="mode" value="full">
+      <button type="submit" class="secondary">Full Rescan</button>
+    </form>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Scan History</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Mode</th>
+        <th>Status</th>
+        <th>Seen</th>
+        <th>Changed</th>
+        <th>Deleted</th>
+        <th>Errors</th>
+        <th>Started</th>
+        <th>Finished</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in runs %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.mode }}</td>
+        <td>{{ r.status }}</td>
+        <td>{{ r.files_seen }}</td>
+        <td>{{ r.files_changed }}</td>
+        <td>{{ r.files_deleted }}</td>
+        <td>{{ r.errors_count }}</td>
+        <td>{{ r.started_at }}</td>
+        <td>{{ r.finished_at or "-" }}</td>
+      </tr>
+      {% if r.notes %}
+      <tr>
+        <td colspan="9"><pre class="notes">{{ r.notes }}</pre></td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <h2>Parse Errors</h2>
+  {% if errors %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>File</th>
+        <th>Error</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in errors %}
+      <tr>
+        <td>{{ e.id }}</td>
+        <td><code>{{ e.full_path }}</code></td>
+        <td>{{ e.error_type }}: {{ e.error_message }}</td>
+        <td>{{ e.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="muted">No parse errors.</p>
+  {% endif %}
+</section>
+{% endblock %}
+

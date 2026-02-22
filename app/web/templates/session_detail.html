@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h1>{{ session.title or session.session_key or ("Session " ~ session.id) }}</h1>
+  <div class="meta-grid">
+    <div><strong>Source:</strong> {{ session.source_name }}</div>
+    <div><strong>Distro/User:</strong> {{ session.distro or "" }} / {{ session.user_name or "" }}</div>
+    <div><strong>Started:</strong> {{ session.started_at or "-" }}</div>
+    <div><strong>Updated:</strong> {{ session.updated_at or "-" }}</div>
+    <div><strong>File:</strong> <code>{{ session.full_path }}</code></div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Messages ({{ messages|length }})</h2>
+  <div class="row">
+    {% if ofac %}
+      <span class="muted">OFAC mode enabled: showing `User` + final `Codex` answers only. Hidden messages: {{ non_ofac_count }}.</span>
+    {% elif show_service %}
+      <span class="muted">Showing service events (including reasoning: {{ reasoning_count }}).</span>
+    {% elif service_count %}
+      <span class="muted">Service events are hidden (reasoning: {{ reasoning_count }}). Toggle from the Sessions page checkbox.</span>
+    {% endif %}
+  </div>
+  {% if messages %}
+    <div class="chat">
+      {% for m in messages %}
+      <article class="msg role-{{ m.role|lower }} kind-{{ (m.message_kind or 'unknown')|lower }}">
+        <div class="msg-head">
+          <span class="badge">
+            {% if (m.message_kind or "")|lower == "assistant_reasoning" %}Codex (Thinking)
+            {% elif (m.message_kind or "")|lower in ["assistant_service", "assistant"] %}Codex (Service)
+            {% elif (m.role or "")|lower == "assistant" %}Codex
+            {% elif (m.role or "")|lower == "user" %}User
+            {% elif (m.role or "")|lower == "system" %}System
+            {% elif (m.role or "")|lower == "tool" %}Tool
+            {% else %}{{ m.role }}{% endif %}
+          </span>
+          <span class="muted">{{ m.message_kind or "unknown" }}</span>
+          <span class="muted">#{{ m.msg_index }}</span>
+          <span class="muted">{{ m.created_at or "" }}</span>
+        </div>
+        <pre class="msg-content">{{ m.content }}</pre>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No parsed messages. The file may have an unsupported format.</p>
+  {% endif %}
+</section>
+{% endblock %}

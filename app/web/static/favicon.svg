@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Codex Chats Archive">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f6c5b"/>
+      <stop offset="100%" stop-color="#d88420"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fffdf8"/>
+      <stop offset="100%" stop-color="#efe7da"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#bg)"/>
+  <rect x="10" y="12" width="44" height="40" rx="10" fill="url(#card)" opacity="0.98"/>
+
+  <path d="M18 24h19a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5H27l-6 5v-5h-3a5 5 0 0 1-5-5v-6a5 5 0 0 1 5-5Z"
+        fill="#0f6c5b" opacity="0.95"/>
+  <circle cx="24" cy="32" r="1.8" fill="#f7f3ea"/>
+  <circle cx="30" cy="32" r="1.8" fill="#f7f3ea"/>
+  <circle cx="36" cy="32" r="1.8" fill="#f7f3ea"/>
+
+  <path d="M36 19h10a4 4 0 0 1 4 4v7a4 4 0 0 1-4 4h-2v4l-5-4h-3a4 4 0 0 1-4-4v-7a4 4 0 0 1 4-4Z"
+        fill="#d88420"/>
+  <path d="M17 49h30" stroke="#cdbfa8" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M21 53h22" stroke="#cdbfa8" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

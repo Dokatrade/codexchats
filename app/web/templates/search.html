@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="panel">
+  <h1>Search</h1>
+  <form class="filters filters-search" method="get" action="/search">
+    <input type="text" name="q" value="{{ q }}" placeholder="FTS query">
+    <label class="checkbox">
+      <input type="checkbox" name="show_service" value="1" {% if show_service %}checked{% endif %}>
+      Include service events
+    </label>
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<section class="panel">
+  {% if q and not results %}
+    <p class="muted">No matches.</p>
+  {% endif %}
+  {% for r in results %}
+    <article class="search-result kind-{{ (r.message_kind or 'unknown')|lower }}">
+      <div class="msg-head">
+        <a href="/sessions/{{ r.session_id }}{% if show_service %}?show_service=1{% endif %}">{{ r.session_title }}</a>
+        <span class="muted">{{ r.source_name }}</span>
+        <span class="badge">
+          {% if (r.message_kind or "")|lower == "assistant_reasoning" %}Codex (Thinking)
+          {% elif (r.message_kind or "")|lower in ["assistant_service", "assistant"] %}Codex (Service)
+          {% elif (r.role or "")|lower == "assistant" %}Codex
+          {% elif (r.role or "")|lower == "user" %}User
+          {% elif (r.role or "")|lower == "system" %}System
+          {% elif (r.role or "")|lower == "tool" %}Tool
+          {% else %}{{ r.role }}{% endif %}
+        </span>
+      </div>
+      <div class="muted">{{ r.message_kind or "unknown" }}</div>
+      <div class="snippet">{{ r.snippet | safe }}</div>
+    </article>
+  {% endfor %}
+</section>
+{% endblock %}

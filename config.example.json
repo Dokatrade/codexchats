@@ -1,0 +1,25 @@
+{
+  "db_path": "data/app.db",
+  "host": "127.0.0.1",
+  "port": 8000,
+  "scan_on_startup": true,
+  "polling_enabled": false,
+  "polling_interval_sec": 30,
+  "sources": [
+    {
+      "name": "Debian / labriz",
+      "root_path": "\\\\wsl.localhost\\Debian\\home\\labriz\\.codex\\sessions",
+      "distro": "Debian",
+      "user": "labriz",
+      "enabled": true
+    },
+    {
+      "name": "Ubuntu / maximo",
+      "root_path": "\\\\wsl.localhost\\Ubuntu\\home\\maximo\\.codex\\sessions",
+      "distro": "Ubuntu",
+      "user": "maximo",
+      "enabled": true
+    }
+  ]
+}
+
