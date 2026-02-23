@@ -4,6 +4,8 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
+from app.titles import enrich_search_result_row, enrich_session_row
+
 
 def build_router(templates: Jinja2Templates) -> APIRouter:
     router = APIRouter()
@@ -13,10 +15,9 @@ def build_router(templates: Jinja2Templates) -> APIRouter:
         request: Request,
         q: str | None = None,
         source_id: str | None = None,
-        distro: str | None = None,
         user_name: str | None = None,
         hide_service: str = "1",
-        ofac: str = "0",
+        ofac: str = "1",
     ) -> HTMLResponse:
         repo = request.app.state.repo
         source_id_value = int(source_id) if (source_id or "").strip().isdigit() else None
@@ -25,10 +26,10 @@ def build_router(templates: Jinja2Templates) -> APIRouter:
         sessions = repo.list_sessions(
             q=q,
             source_id=source_id_value,
-            distro=distro,
             user_name=user_name,
             limit=100,
         )
+        sessions = [enrich_session_row(s) for s in sessions]
         stats = repo.get_dashboard_stats()
         sources = repo.get_sources()
         return templates.TemplateResponse(
@@ -40,7 +41,6 @@ def build_router(templates: Jinja2Templates) -> APIRouter:
                 "sources": sources,
                 "q": q or "",
                 "source_id": source_id_value,
-                "distro": distro or "",
                 "user_name": user_name or "",
                 "hide_service": hide_service_enabled,
                 "ofac": ofac_enabled,
@@ -63,6 +63,7 @@ def build_router(templates: Jinja2Templates) -> APIRouter:
                 {"request": request, "message": f"Session {session_id} not found"},
                 status_code=404,
             )
+        session_view = enrich_session_row(session)
         include_service = bool(show_service or show_reasoning)
         ofac_enabled = bool(ofac)
         messages = repo.get_messages_for_session(
@@ -77,7 +78,7 @@ def build_router(templates: Jinja2Templates) -> APIRouter:
             "session_detail.html",
             {
                 "request": request,
-                "session": session,
+                "session": session_view,
                 "messages": messages,
                 "show_reasoning": include_service,
                 "show_service": include_service,
@@ -98,10 +99,13 @@ def build_router(templates: Jinja2Templates) -> APIRouter:
         repo = request.app.state.repo
         include_service = bool(show_service or show_reasoning)
         results = (
-            repo.search_messages(
-                q,
-                include_service=include_service,
-            )
+            [
+                enrich_search_result_row(r)
+                for r in repo.search_messages(
+                    q,
+                    include_service=include_service,
+                )
+            ]
             if q.strip()
             else []
         )

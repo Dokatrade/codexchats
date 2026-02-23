@@ -258,6 +258,19 @@ class Repository:
             s.title,
             s.started_at,
             s.updated_at,
+            (
+              SELECT m.content
+              FROM messages m
+              WHERE m.session_id = s.id
+                AND LOWER(COALESCE(m.role, '')) = 'user'
+                AND TRIM(COALESCE(m.content, '')) <> ''
+                AND TRIM(COALESCE(m.content, '')) NOT LIKE '# AGENTS.md instructions%'
+                AND TRIM(COALESCE(m.content, '')) NOT LIKE '<environment_context>%'
+                AND TRIM(COALESCE(m.content, '')) NOT LIKE '<collaboration_mode>%'
+                AND TRIM(COALESCE(m.content, '')) NOT LIKE '<permissions instructions>%'
+              ORDER BY m.msg_index ASC, m.id ASC
+              LIMIT 1
+            ) AS title_candidate,
             f.full_path,
             f.rel_path,
             src.id AS source_id,
@@ -307,6 +320,19 @@ class Repository:
             """
             SELECT
                 s.*,
+                (
+                  SELECT m.content
+                  FROM messages m
+                  WHERE m.session_id = s.id
+                    AND LOWER(COALESCE(m.role, '')) = 'user'
+                    AND TRIM(COALESCE(m.content, '')) <> ''
+                    AND TRIM(COALESCE(m.content, '')) NOT LIKE '# AGENTS.md instructions%'
+                    AND TRIM(COALESCE(m.content, '')) NOT LIKE '<environment_context>%'
+                    AND TRIM(COALESCE(m.content, '')) NOT LIKE '<collaboration_mode>%'
+                    AND TRIM(COALESCE(m.content, '')) NOT LIKE '<permissions instructions>%'
+                  ORDER BY m.msg_index ASC, m.id ASC
+                  LIMIT 1
+                ) AS title_candidate,
                 f.full_path,
                 f.rel_path,
                 src.name AS source_name,
@@ -460,6 +486,22 @@ class Repository:
                 m.created_at,
                 s.id AS session_id,
                 COALESCE(s.title, s.session_key) AS session_title,
+                s.title,
+                s.session_key,
+                (
+                  SELECT m2.content
+                  FROM messages m2
+                  WHERE m2.session_id = s.id
+                    AND LOWER(COALESCE(m2.role, '')) = 'user'
+                    AND TRIM(COALESCE(m2.content, '')) <> ''
+                    AND TRIM(COALESCE(m2.content, '')) NOT LIKE '# AGENTS.md instructions%'
+                    AND TRIM(COALESCE(m2.content, '')) NOT LIKE '<environment_context>%'
+                    AND TRIM(COALESCE(m2.content, '')) NOT LIKE '<collaboration_mode>%'
+                    AND TRIM(COALESCE(m2.content, '')) NOT LIKE '<permissions instructions>%'
+                  ORDER BY m2.msg_index ASC, m2.id ASC
+                  LIMIT 1
+                ) AS title_candidate,
+                f.rel_path,
                 src.name AS source_name,
                 snippet(messages_fts, 0, '[', ']', ' … ', 12) AS snippet
             FROM messages_fts

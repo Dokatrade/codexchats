@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  {% set home_href = "/" %}
+  {% set home_href = "/?ofac=1" %}
   {% if request.query_params.get("ofac") == "1" %}
     {% set home_href = "/?ofac=1" %}
   {% elif request.query_params.get("show_service") == "1" %}

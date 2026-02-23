@@ -16,7 +16,6 @@
         <option value="{{ s.id }}" {% if source_id == s.id %}selected{% endif %}>{{ s.name }}</option>
       {% endfor %}
     </select>
-    <input type="text" name="distro" value="{{ distro }}" placeholder="Distro">
     <input type="text" name="user_name" value="{{ user_name }}" placeholder="User">
     <input type="hidden" name="hide_service" value="0">
     <label class="checkbox">
@@ -63,14 +62,14 @@
         <tr>
           <td>
             <a href="/sessions/{{ s.id }}{% if ofac %}?ofac=1{% elif not hide_service %}?show_service=1{% endif %}">
-              {{ s.title or s.session_key or ("Session " ~ s.id) }}
+              {{ s.display_title or s.title or s.session_key or ("Session " ~ s.id) }}
             </a>
             <div class="muted">{{ s.rel_path }}</div>
           </td>
           <td>{{ s.source_name }}</td>
-          <td>{{ s.distro or "" }} / {{ s.user_name or "" }}</td>
+          <td>{{ s.user_name or "" }}</td>
           <td>{{ s.messages_count }}</td>
-          <td>{{ s.updated_at or s.started_at or "-" }}</td>
+          <td>{{ (s.updated_at or s.started_at) | dt_local }}</td>
         </tr>
         {% endfor %}
       </tbody>

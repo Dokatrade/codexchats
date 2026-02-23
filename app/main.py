@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import UTC, datetime
 from pathlib import Path
 
 import uvicorn
@@ -22,6 +23,38 @@ logging.basicConfig(
 logger = logging.getLogger("codexchats")
 
 
+def _format_local_datetime(value: object) -> str:
+    if value in (None, ""):
+        return "-"
+
+    text = str(value).strip()
+    if not text:
+        return "-"
+
+    dt: datetime | None = None
+
+    try:
+        if text.endswith("Z"):
+            dt = datetime.fromisoformat(text[:-1] + "+00:00")
+        else:
+            dt = datetime.fromisoformat(text)
+    except ValueError:
+        for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f"):
+            try:
+                dt = datetime.strptime(text, fmt).replace(tzinfo=UTC)
+                break
+            except ValueError:
+                continue
+
+    if dt is None:
+        return text
+
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=UTC)
+
+    return dt.astimezone().strftime("%Y-%m-%d %H:%M:%S")
+
+
 def create_app() -> FastAPI:
     config = load_config()
     conn = connect(config.db_file)
@@ -37,6 +70,7 @@ def create_app() -> FastAPI:
 
     base_dir = Path(__file__).resolve().parent
     templates = Jinja2Templates(directory=str(base_dir / "web" / "templates"))
+    templates.env.filters["dt_local"] = _format_local_datetime
     app.mount("/static", StaticFiles(directory=str(base_dir / "web" / "static")), name="static")
     app.include_router(build_router(templates))
 

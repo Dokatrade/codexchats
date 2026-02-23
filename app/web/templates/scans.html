@@ -40,8 +40,8 @@
         <td>{{ r.files_changed }}</td>
         <td>{{ r.files_deleted }}</td>
         <td>{{ r.errors_count }}</td>
-        <td>{{ r.started_at }}</td>
-        <td>{{ r.finished_at or "-" }}</td>
+        <td>{{ r.started_at | dt_local }}</td>
+        <td>{{ r.finished_at | dt_local }}</td>
       </tr>
       {% if r.notes %}
       <tr>
@@ -71,7 +71,7 @@
         <td>{{ e.id }}</td>
         <td><code>{{ e.full_path }}</code></td>
         <td>{{ e.error_type }}: {{ e.error_message }}</td>
-        <td>{{ e.created_at }}</td>
+        <td>{{ e.created_at | dt_local }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -81,4 +81,3 @@
   {% endif %}
 </section>
 {% endblock %}
-

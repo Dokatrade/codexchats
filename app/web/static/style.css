@@ -71,7 +71,7 @@ code { font-family: "IBM Plex Mono", Consolas, monospace; }
 
 .filters {
   display: grid;
-  grid-template-columns: 1.5fr 1fr .8fr .8fr auto auto auto;
+  grid-template-columns: 1.6fr 1fr .9fr auto auto auto;
   gap: .5rem;
 }
 .filters-search {

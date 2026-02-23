@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="panel">
-  <h1>{{ session.title or session.session_key or ("Session " ~ session.id) }}</h1>
+  <h1>{{ session.display_title or session.title or session.session_key or ("Session " ~ session.id) }}</h1>
   <div class="meta-grid">
     <div><strong>Source:</strong> {{ session.source_name }}</div>
     <div><strong>Distro/User:</strong> {{ session.distro or "" }} / {{ session.user_name or "" }}</div>
-    <div><strong>Started:</strong> {{ session.started_at or "-" }}</div>
-    <div><strong>Updated:</strong> {{ session.updated_at or "-" }}</div>
+    <div><strong>Started:</strong> {{ session.started_at | dt_local }}</div>
+    <div><strong>Updated:</strong> {{ session.updated_at | dt_local }}</div>
     <div><strong>File:</strong> <code>{{ session.full_path }}</code></div>
   </div>
 </section>
@@ -38,7 +38,7 @@
           </span>
           <span class="muted">{{ m.message_kind or "unknown" }}</span>
           <span class="muted">#{{ m.msg_index }}</span>
-          <span class="muted">{{ m.created_at or "" }}</span>
+          <span class="muted">{{ m.created_at | dt_local }}</span>
         </div>
         <pre class="msg-content">{{ m.content }}</pre>
       </article>

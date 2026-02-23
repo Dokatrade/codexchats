@@ -19,7 +19,7 @@
   {% for r in results %}
     <article class="search-result kind-{{ (r.message_kind or 'unknown')|lower }}">
       <div class="msg-head">
-        <a href="/sessions/{{ r.session_id }}{% if show_service %}?show_service=1{% endif %}">{{ r.session_title }}</a>
+        <a href="/sessions/{{ r.session_id }}{% if show_service %}?show_service=1{% endif %}">{{ r.display_title or r.session_title }}</a>
         <span class="muted">{{ r.source_name }}</span>
         <span class="badge">
           {% if (r.message_kind or "")|lower == "assistant_reasoning" %}Codex (Thinking)
